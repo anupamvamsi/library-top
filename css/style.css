@@ -58,11 +58,55 @@ body {
   align-items: center;
 
   margin: auto;
-  padding: 1em 1.5em 2em 1.5em;
+  padding: 2em 2em 2em 2em;
 
   border-radius: 1em;
 
   background-color: #fefefe;
+}
+
+.new-book-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 0.8em;
+}
+
+.form-title {
+  margin: 0 0 0.5em 0;
+}
+
+.btn-close {
+  font-size: 1.5rem;
+  font-weight: bold;
+
+  margin: 0 0 0.5em 0;
+  padding: 0;
+
+  border: none;
+  background: none;
+}
+
+.btn-close:hover {
+  cursor: pointer;
+}
+
+.new-book-form > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.new-book-form > div + div + div {
+  justify-content: flex-start;
+  gap: 1.3em;
+}
+
+.btn-submit-book {
+  align-self: flex-start;
+  padding: 0.2em 1.8em;
+  font-size: 0.9em;
 }
 
 /* ///////////////////////////////// */
@@ -74,6 +118,8 @@ body {
   flex-flow: row wrap;
   justify-content: center;
   gap: 2em;
+
+  width: 70%;
 
   padding: 1em;
 }

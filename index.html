@@ -28,8 +28,11 @@
 
       <section class="new-book-container">
         <div class="new-book-content">
-          <form class="new-book-form">
-            <h1 class="form-title">Add a new book</h1>
+          <form action="" method="POST" class="new-book-form">
+            <div>
+              <h1 class="form-title">Add a new book</h1>
+              <button type="button" class="btn-close">&times;</button>
+            </div>
 
             <div class="new-title">
               <label for="new_book_title">Title</label>
@@ -38,6 +41,8 @@
                 id="new_book_title"
                 name="book_title"
                 placeholder="Eragon"
+                required
+                minlength="1"
               />
             </div>
 
@@ -48,6 +53,8 @@
                 id="new_book_author"
                 name="book_author"
                 placeholder="Christopher Paolini"
+                required
+                minlength="1"
               />
             </div>
 
@@ -55,6 +62,8 @@
               <label for="new_book_read">Read</label>
               <input type="checkbox" id="new_book_read" name="book_read" />
             </div>
+
+            <button type="submit" class="btn-submit-book">Add!</button>
           </form>
         </div>
       </section>
