@@ -6,7 +6,13 @@
 // container.appendChild(p);
 
 const container = document.querySelector(".container");
+const newBookBtn = document.querySelector(".btn-new-book");
+const newBookContainer = document.querySelector(".new-book-container");
 const library = document.querySelector(".library");
+
+newBookBtn.addEventListener("click", () => {
+  newBookContainer.style.display = "flex";
+});
 
 let myLibrary = [];
 
@@ -55,6 +61,8 @@ function displayLibraryBooks(libraryBooks) {
     divider2.appendChild(bookRead);
     bookCard.appendChild(divider1);
     bookCard.appendChild(divider2);
+
+    bookCard.setAttribute("data-bookID", libraryBooks.indexOf(book));
 
     // bookCard.textContent += `${book.title} written by ${book.author}, has been ${book.haveRead}.`;
 
