@@ -47,12 +47,18 @@ Book.prototype.createAndAddBookToDisplay = function (libraryBooks) {
   const divider2 = document.createElement("div");
   divider2.classList.add("book-divider2");
 
-  // divider1: bookTitle, bookAuthor
+  // divider1: bookTitle, bookAuthor, removeBookBtn
   const bookTitle = document.createElement("h3");
   bookTitle.classList.add("book-title");
 
   const bookAuthor = document.createElement("h4");
   bookAuthor.classList.add("book-author");
+
+  const bookRemove = document.createElement("button");
+  bookRemove.classList.add("btn-remove-book");
+  bookRemove.setAttribute("type", "button");
+  bookRemove.setAttribute("title", "Remove Book");
+  bookRemove.addEventListener("click", removeBookFromLibraryAndDisplay);
 
   divider1.appendChild(bookTitle);
   divider1.appendChild(bookAuthor);
@@ -70,6 +76,7 @@ Book.prototype.createAndAddBookToDisplay = function (libraryBooks) {
   bookRead.classList.add("read-status");
   bookRead.addEventListener("change", readStatusChange);
 
+  divider2.appendChild(bookRemove);
   divider2.appendChild(bookReadLabel);
   divider2.appendChild(bookRead);
 
@@ -78,6 +85,7 @@ Book.prototype.createAndAddBookToDisplay = function (libraryBooks) {
   bookAuthor.textContent = this.author;
   bookReadLabel.textContent = "Read";
   bookRead.checked = this.haveRead;
+  bookRemove.textContent = "×";
 
   // Final set up of the Book Card
   bookCard.appendChild(divider1);
@@ -87,6 +95,7 @@ Book.prototype.createAndAddBookToDisplay = function (libraryBooks) {
   let bookID = libraryBooks.indexOf(this);
   bookCard.setAttribute("data-book-id", bookID);
   bookRead.setAttribute("data-book-id", bookID);
+  bookRemove.setAttribute("data-book-id", bookID);
 
   // Show book in the GUI
   libraryContainer.appendChild(bookCard);
@@ -122,7 +131,9 @@ function displayLibraryBooks() {
   libraryContainer.textContent = "";
 
   for (const book of myLibrary) {
-    book.createAndAddBookToDisplay(myLibrary);
+    if (!(book === undefined)) {
+      book.createAndAddBookToDisplay(myLibrary);
+    }
   }
 }
 
@@ -186,16 +197,24 @@ function submitNewBookForm(e) {
 function readStatusChange(e) {
   let bookIndex = Number(e.target.dataset.bookId);
   myLibrary[bookIndex].haveRead = e.target.checked;
+  console.log(myLibrary[bookIndex]);
+}
+
+function removeBookFromLibraryAndDisplay(e) {
+  let bookIndex = Number(e.target.dataset.bookId);
+  let bookCard = document.querySelector(
+    `.book-card[data-book-id="${bookIndex}"`
+  );
+  console.log(bookIndex);
+  console.log(bookCard);
+  libraryContainer.removeChild(bookCard);
+
+  // myLibrary.splice(bookIndex, 1);
+  delete myLibrary[bookIndex];
+  console.log(myLibrary);
 }
 
 /* ///////////////////////////////// */
 // DRIVER CODE
 /* ///////////////////////////////// */
 initLibrary();
-
-// TODO: Change Read Status of the Book Object after GUI toggle
-// const readStatusOfBooks = document.querySelectorAll(".read-status");
-
-// for (readStatus of readStatusOfBooks) {
-//   console.log(readStatus.checked);
-// }

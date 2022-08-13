@@ -125,7 +125,8 @@ body {
 }
 
 /* ///////////// BOOK ////////////// */
-.library-container > div {
+/* .library-container > div { */
+.book-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -135,16 +136,38 @@ body {
   width: 12em;
   height: 16em;
 
-  background-color: pink;
-
-  /* box-shadow: 0.2em 0.4em 0 0 rgb(212, 211, 211); */
-
   border-left: 0.8em solid hotpink;
   border-top-left-radius: 0.4em;
   border-bottom-left-radius: 0.4em;
+
+  background-color: pink;
+
+  /* box-shadow: 0.2em 0.4em 0 0 rgb(212, 211, 211); */
+}
+
+/* ///////////// BOOK (CLOSE) ////// */
+.btn-remove-book {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: red;
+
+  margin: 0 3em 0 0;
+  padding: 0;
+
+  border: none;
+  background: none;
+}
+
+.btn-remove-book:hover {
+  cursor: pointer;
 }
 
 /* ///////////// BOOK (READ) /////// */
-.library-container > div > div + div {
+/* .library-container > div > div + div { */
+.book-divider2 {
   align-self: flex-end;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
