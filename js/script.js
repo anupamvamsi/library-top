@@ -1,56 +1,33 @@
 const container = document.querySelector(".container");
 
-const newBookBtn = document.querySelector(".btn-new-book");
-const newBookContainer = document.querySelector(".new-book-container");
-const closeBtn = document.querySelector(".btn-close");
+// New book button and div elements : nB = newBook
+const nBBtn = document.querySelector(".btn-new-book");
+const nBContainer = document.querySelector(".new-book-container");
 
 // Form and form elements
-const newBookForm = document.querySelector(".new-book-form");
-const newBookTitle = document.querySelector("#new_book_title");
-const newBookAuthor = document.querySelector("#new_book_author");
-const newBookHasRead = document.querySelector("#new_book_read");
-const submitNewBookBtn = document.querySelector(".btn-submit-book");
+const nBForm = document.querySelector(".new-book-form");
+const nBCloseFormBtn = document.querySelector(".btn-close-form");
+const nBTitle = document.querySelector("#new_book_title");
+const nBAuthor = document.querySelector("#new_book_author");
+const nBHasRead = document.querySelector("#new_book_read");
+const nBSubmitBtn = document.querySelector(".btn-submit-book");
 
-const library = document.querySelector(".library");
+const libraryContainer = document.querySelector(".library-container");
 
-// Open pop up
-newBookBtn.addEventListener("click", () => {
-  newBookForm.reset();
-  newBookContainer.style.display = "flex";
-});
+// Open form
+nBBtn.addEventListener("click", nBBtnClickOpenModal);
 
-// Close pop up
-closeBtn.addEventListener("click", () => {
-  newBookContainer.style.display = "none";
-});
-window.addEventListener("click", closePopUp);
-window.addEventListener("keydown", closePopUp);
-
-function closePopUp(e) {
-  if (e.target == newBookContainer || e.key === "Escape") {
-    newBookContainer.style.display = "none";
-  }
-}
+// Close form
+nBCloseFormBtn.addEventListener("click", closeModal);
+window.addEventListener("click", closeModalWindow);
+window.addEventListener("keydown", closeModalWindow);
 
 // Add new book
-newBookForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+nBForm.addEventListener("submit", submitNewBookForm);
 
-  let newTitle = newBookTitle.value;
-  let newAuthor = newBookAuthor.value;
-  let newHasRead = newBookHasRead.checked;
-  console.log(newHasRead);
-
-  let newBook = new Book(newTitle, newAuthor, newHasRead);
-
-  myLibrary.push(newBook);
-  displayLibraryBooks(myLibrary);
-
-  // hide pop up after submission
-  newBookContainer.style.display = "none";
-});
-
-let myLibrary = [];
+/* ///////////////////////////////// */
+// BOOK
+/* ///////////////////////////////// */
 
 function Book(title, author, haveRead) {
   this.title = title;
@@ -58,11 +35,7 @@ function Book(title, author, haveRead) {
   this.haveRead = haveRead;
 }
 
-function addBookToLibrary(book) {
-  myLibrary.push(book);
-}
-
-function createBookCardToDisplay(book, libraryBooks) {
+Book.prototype.addBookCardToDisplay = function (libraryBooks) {
   const bookCard = document.createElement("div");
   bookCard.classList.add("book-card");
 
@@ -71,7 +44,7 @@ function createBookCardToDisplay(book, libraryBooks) {
   const divider2 = document.createElement("div");
   divider2.classList.add("book-divider2");
 
-  // divider1: bookTItle, bookAuthor
+  // divider1: bookTitle, bookAuthor
   const bookTitle = document.createElement("h3");
   bookTitle.classList.add("book-title");
 
@@ -83,57 +56,129 @@ function createBookCardToDisplay(book, libraryBooks) {
 
   // divider2: readLabel, readCheckbox
   const bookReadLabel = document.createElement("label");
-  bookReadLabel.setAttribute("for", book.title);
+  bookReadLabel.setAttribute("for", this.title);
   bookReadLabel.classList.add("read-status-label");
 
   const bookRead = document.createElement("input");
   bookRead.setAttribute("type", "checkbox");
-  bookRead.setAttribute("id", book.title);
-  bookRead.setAttribute("name", book.title);
+  bookRead.setAttribute("id", this.title);
+  bookRead.setAttribute("name", this.title);
   bookRead.classList.add("read-status");
 
   divider2.appendChild(bookReadLabel);
   divider2.appendChild(bookRead);
 
   // Set GUI values
-  bookTitle.textContent = book.title;
-  bookAuthor.textContent = book.author;
+  bookTitle.textContent = this.title;
+  bookAuthor.textContent = this.author;
   bookReadLabel.textContent = "Read";
-  bookRead.checked = book.haveRead;
+  bookRead.checked = this.haveRead;
 
   // Final set up of the Book Card
   bookCard.appendChild(divider1);
   bookCard.appendChild(divider2);
 
   // Set custom ID for tracking
-  bookCard.setAttribute("data-bookID", libraryBooks.indexOf(book));
+  bookCard.setAttribute("data-bookID", libraryBooks.indexOf(this));
 
   // Show book in the GUI
-  library.appendChild(bookCard);
+  libraryContainer.appendChild(bookCard);
+};
+
+/* ///////////////////////////////// */
+// LIBRARY
+/* ///////////////////////////////// */
+
+let myLibrary = [];
+
+function initLibrary() {
+  addCustomBooksToLibrary();
+
+  displayLibraryBooks(myLibrary);
 }
 
-function displayLibraryBooks(libraryBooks) {
-  library.textContent = "";
+function addNewBookToLibrary() {
+  let newTitle = nBTitle.value;
+  let newAuthor = nBAuthor.value;
+  let newHasRead = nBHasRead.checked;
 
-  for (const book of libraryBooks) {
-    createBookCardToDisplay(book, libraryBooks);
+  let newBook = new Book(newTitle, newAuthor, newHasRead);
+
+  myLibrary.push(newBook);
+}
+
+function addBookToLibrary(book) {
+  myLibrary.push(book);
+}
+
+function displayLibraryBooks() {
+  libraryContainer.textContent = "";
+
+  for (const book of myLibrary) {
+    book.addBookCardToDisplay(myLibrary);
   }
 }
 
-function addCustomBooks() {
+function addCustomBooksToLibrary() {
   addBookToLibrary(new Book("The Lowland", "Jhumpa Lahiri", true));
   addBookToLibrary(
     new Book("The Hitchhiker's Guide To The Galaxy", "Douglas Adams", true)
   );
   addBookToLibrary(new Book("The Alchemist", "Paulo Coelho", false));
+
+  // libraryObj created through function Library() ---
+  // libraryObj.addBookToLibrary(new Book("The Lowland", "Jhumpa Lahiri", true));
 }
 
-function initLibrary() {
-  addCustomBooks();
+/* Library "class"
+// libraryObj created through function Library() ---
+// let libraryObj = new Library();
 
+// function Library() {
+//   this.bookList = new Array();
+// }
+
+// Library.prototype.addBookToLibrary = function (book) {
+//   this.bookList.push(book);
+// };
+*/
+
+/* ///////////////////////////////// */
+// FORM - ADD NEW BOOK
+/* ///////////////////////////////// */
+
+function openModal() {
+  nBContainer.style.display = "flex";
+}
+
+function closeModal() {
+  nBContainer.style.display = "none";
+}
+
+function nBBtnClickOpenModal() {
+  nBForm.reset();
+  openModal();
+}
+
+function closeModalWindow(e) {
+  if (e.target == nBContainer || e.key === "Escape") {
+    closeModal();
+  }
+}
+
+function submitNewBookForm(e) {
+  e.preventDefault();
+
+  addNewBookToLibrary();
   displayLibraryBooks(myLibrary);
+
+  // close pop up after submission
+  closeModal();
 }
 
+/* ///////////////////////////////// */
+// DRIVER CODE
+/* ///////////////////////////////// */
 initLibrary();
 
 // TODO: Change Read Status of the Book Object after GUI toggle
