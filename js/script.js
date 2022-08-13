@@ -35,7 +35,10 @@ function Book(title, author, haveRead) {
   this.haveRead = haveRead;
 }
 
-Book.prototype.addBookCardToDisplay = function (libraryBooks) {
+// how to do this?
+Book.prototype.changeBookReadStatus = function (e, libraryBooks) {};
+
+Book.prototype.createAndAddBookToDisplay = function (libraryBooks) {
   const bookCard = document.createElement("div");
   bookCard.classList.add("book-card");
 
@@ -63,7 +66,9 @@ Book.prototype.addBookCardToDisplay = function (libraryBooks) {
   bookRead.setAttribute("type", "checkbox");
   bookRead.setAttribute("id", this.title);
   bookRead.setAttribute("name", this.title);
+  bookRead.setAttribute("title", "Book Read Status");
   bookRead.classList.add("read-status");
+  bookRead.addEventListener("change", readStatusChange);
 
   divider2.appendChild(bookReadLabel);
   divider2.appendChild(bookRead);
@@ -79,7 +84,9 @@ Book.prototype.addBookCardToDisplay = function (libraryBooks) {
   bookCard.appendChild(divider2);
 
   // Set custom ID for tracking
-  bookCard.setAttribute("data-bookID", libraryBooks.indexOf(this));
+  let bookID = libraryBooks.indexOf(this);
+  bookCard.setAttribute("data-book-id", bookID);
+  bookRead.setAttribute("data-book-id", bookID);
 
   // Show book in the GUI
   libraryContainer.appendChild(bookCard);
@@ -115,7 +122,7 @@ function displayLibraryBooks() {
   libraryContainer.textContent = "";
 
   for (const book of myLibrary) {
-    book.addBookCardToDisplay(myLibrary);
+    book.createAndAddBookToDisplay(myLibrary);
   }
 }
 
@@ -174,6 +181,11 @@ function submitNewBookForm(e) {
 
   // close pop up after submission
   closeModal();
+}
+
+function readStatusChange(e) {
+  let bookIndex = Number(e.target.dataset.bookId);
+  myLibrary[bookIndex].haveRead = e.target.checked;
 }
 
 /* ///////////////////////////////// */
