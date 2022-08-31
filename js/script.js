@@ -58,7 +58,10 @@ class Book {
       type: 'button',
       title: 'Remove Book',
     });
-    bookRemove.addEventListener('click', removeBookFromLibraryAndDisplay);
+    bookRemove.addEventListener(
+      'click',
+      Library.removeBookFromLibraryAndDisplay
+    );
 
     return bookRemove;
   }
@@ -81,7 +84,7 @@ class Book {
       name: this.title,
       title: 'Book Read Status',
     });
-    bookReadChkBox.addEventListener('change', readStatusChange);
+    bookReadChkBox.addEventListener('change', Book.readStatusChange);
 
     return bookReadChkBox;
   }
@@ -122,67 +125,75 @@ class Book {
     // Show book in the GUI
     DOMElements.libraryContainer.appendChild(bookCard);
   }
+
+  static readStatusChange(e) {
+    const bookIndex = Number(e.target.dataset.bookId);
+    Library.myLibrary[bookIndex].haveRead = e.target.checked;
+    console.log(Library.myLibrary[bookIndex]);
+  }
 }
 
 /* ///////////////////////////////// */
 // LIBRARY
 /* ///////////////////////////////// */
 
-const myLibrary = [];
+class Library {
+  static myLibrary = [];
 
-function addBookToLibrary(book) {
-  myLibrary.push(book);
+  static addBookToLibrary(book) {
+    Library.myLibrary.push(book);
+  }
+
+  static addCustomBooksToLibrary() {
+    Library.addBookToLibrary(new Book('The Lowland', 'Jhumpa Lahiri', true));
+    Library.addBookToLibrary(
+      new Book("The Hitchhiker's Guide To The Galaxy", 'Douglas Adams', true)
+    );
+    Library.addBookToLibrary(new Book('The Alchemist', 'Paulo Coelho', false));
+  }
+
+  static displayLibraryBooks() {
+    DOMElements.libraryContainer.textContent = '';
+
+    Library.myLibrary.forEach((book) => {
+      if (!(book === undefined)) {
+        book.createAndAddBookToDisplay(Library.myLibrary);
+      }
+    });
+  }
+
+  static initLibrary() {
+    Library.addCustomBooksToLibrary();
+
+    Library.displayLibraryBooks(Library.myLibrary);
+  }
+
+  static addNewBookToLibrary() {
+    const newTitle = DOMElements.nBTitle.value;
+    const newAuthor = DOMElements.nBAuthor.value;
+    const newHasRead = DOMElements.nBHasRead.checked;
+
+    const newBook = new Book(newTitle, newAuthor, newHasRead);
+
+    Library.myLibrary.push(newBook);
+  }
+
+  static removeBookFromLibraryAndDisplay(e) {
+    const bookIndex = Number(e.target.dataset.bookId);
+    const bookCard = document.querySelector(
+      `.book-card[data-book-id="${bookIndex}"`
+    );
+
+    console.log(bookIndex);
+    console.log(bookCard);
+
+    DOMElements.libraryContainer.removeChild(bookCard);
+
+    // Library.myLibrary.splice(bookIndex, 1);
+    delete Library.myLibrary[bookIndex];
+    console.log(Library.myLibrary);
+  }
 }
-
-function addCustomBooksToLibrary() {
-  addBookToLibrary(new Book('The Lowland', 'Jhumpa Lahiri', true));
-  addBookToLibrary(
-    new Book("The Hitchhiker's Guide To The Galaxy", 'Douglas Adams', true)
-  );
-  addBookToLibrary(new Book('The Alchemist', 'Paulo Coelho', false));
-
-  // libraryObj created through function Library() ---
-  // libraryObj.addBookToLibrary(new Book("The Lowland", "Jhumpa Lahiri", true));
-}
-
-function displayLibraryBooks() {
-  DOMElements.libraryContainer.textContent = '';
-
-  myLibrary.forEach((book) => {
-    if (!(book === undefined)) {
-      book.createAndAddBookToDisplay(myLibrary);
-    }
-  });
-}
-
-function initLibrary() {
-  addCustomBooksToLibrary();
-
-  displayLibraryBooks(myLibrary);
-}
-
-function addNewBookToLibrary() {
-  const newTitle = DOMElements.nBTitle.value;
-  const newAuthor = DOMElements.nBAuthor.value;
-  const newHasRead = DOMElements.nBHasRead.checked;
-
-  const newBook = new Book(newTitle, newAuthor, newHasRead);
-
-  myLibrary.push(newBook);
-}
-
-/* Library "class"
-// libraryObj created through function Library() ---
-// let libraryObj = new Library();
-
-// function Library() {
-//   this.bookList = new Array();
-// }
-
-// Library.prototype.addBookToLibrary = function (book) {
-//   this.bookList.push(book);
-// };
-*/
 
 /* ///////////////////////////////// */
 // FORM - ADD NEW BOOK
@@ -210,31 +221,11 @@ function closeModalWindow(e) {
 function submitNewBookForm(e) {
   e.preventDefault();
 
-  addNewBookToLibrary();
-  displayLibraryBooks(myLibrary);
+  Library.addNewBookToLibrary();
+  Library.displayLibraryBooks(Library.myLibrary);
 
   // close pop up after submission
   closeModal();
-}
-
-function readStatusChange(e) {
-  const bookIndex = Number(e.target.dataset.bookId);
-  myLibrary[bookIndex].haveRead = e.target.checked;
-  console.log(myLibrary[bookIndex]);
-}
-
-function removeBookFromLibraryAndDisplay(e) {
-  const bookIndex = Number(e.target.dataset.bookId);
-  const bookCard = document.querySelector(
-    `.book-card[data-book-id="${bookIndex}"`
-  );
-  console.log(bookIndex);
-  console.log(bookCard);
-  DOMElements.libraryContainer.removeChild(bookCard);
-
-  // myLibrary.splice(bookIndex, 1);
-  delete myLibrary[bookIndex];
-  console.log(myLibrary);
 }
 
 // Open form
@@ -251,4 +242,4 @@ DOMElements.nBForm.addEventListener('submit', submitNewBookForm);
 /* ///////////////////////////////// */
 // DRIVER CODE
 /* ///////////////////////////////// */
-initLibrary();
+Library.initLibrary();
