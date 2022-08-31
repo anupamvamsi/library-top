@@ -1,29 +1,45 @@
-// const container = document.querySelector('.container');
+class DOMElements {
+  //  container = document.querySelector('.container');
 
-// New book button and div elements : nB = newBook
-const nBBtn = document.querySelector('.btn-new-book');
-const nBContainer = document.querySelector('.new-book-container');
+  // New book button and div elements : nB = newBook
+  static nBBtn = document.querySelector('.btn-new-book');
+  static nBContainer = document.querySelector('.new-book-container');
 
-// Form and form elements
-const nBForm = document.querySelector('.new-book-form');
-const nBCloseFormBtn = document.querySelector('.btn-close-form');
-const nBTitle = document.querySelector('#new_book_title');
-const nBAuthor = document.querySelector('#new_book_author');
-const nBHasRead = document.querySelector('#new_book_read');
-// const nBSubmitBtn = document.querySelector('.btn-submit-book');
+  // Form and form elements
+  static nBForm = document.querySelector('.new-book-form');
+  static nBCloseFormBtn = document.querySelector('.btn-close-form');
+  static nBTitle = document.querySelector('#new_book_title');
+  static nBAuthor = document.querySelector('#new_book_author');
+  static nBHasRead = document.querySelector('#new_book_read');
+  //  nBSubmitBtn = document.querySelector('.btn-submit-book');
 
-const libraryContainer = document.querySelector('.library-container');
+  static libraryContainer = document.querySelector('.library-container');
+}
 
-// Open form
-nBBtn.addEventListener('click', nBBtnClickOpenModal);
+class DOM {
+  constructor() {}
 
-// Close form
-nBCloseFormBtn.addEventListener('click', closeModal);
-window.addEventListener('click', closeModalWindow);
-window.addEventListener('keydown', closeModalWindow);
+  static createEleAndAddClasses(elementTag, ...classes) {
+    let element = document.createElement(elementTag);
+    classes.forEach((c) => {
+      element.classList.add(c);
+    });
 
-// Add new book
-nBForm.addEventListener('submit', submitNewBookForm);
+    return element;
+  }
+
+  static appendChildren(element, ...children) {
+    children.forEach((child) => {
+      element.appendChild(child);
+    });
+  }
+
+  static setMultipleAttributes(element, attributes) {
+    Object.keys(attributes).forEach((attr) => {
+      element.setAttribute(attr, attributes[attr]);
+    });
+  }
+}
 
 /* ///////////////////////////////// */
 // BOOK
@@ -36,67 +52,75 @@ class Book {
     this.haveRead = haveRead;
   }
 
-  createAndAddBookToDisplay(libraryBooks) {
-    const bookCard = document.createElement('div');
-    bookCard.classList.add('book-card');
-
-    const divider1 = document.createElement('div');
-    divider1.classList.add('book-divider1');
-    const divider2 = document.createElement('div');
-    divider2.classList.add('book-divider2');
-
-    // divider1: bookTitle, bookAuthor, removeBookBtn
-    const bookTitle = document.createElement('h3');
-    bookTitle.classList.add('book-title');
-
-    const bookAuthor = document.createElement('h4');
-    bookAuthor.classList.add('book-author');
-
-    const bookRemove = document.createElement('button');
-    bookRemove.classList.add('btn-remove-book');
-    bookRemove.setAttribute('type', 'button');
-    bookRemove.setAttribute('title', 'Remove Book');
+  static createRemoveButton() {
+    const bookRemove = DOM.createEleAndAddClasses('button', 'btn-remove-book');
+    DOM.setMultipleAttributes(bookRemove, {
+      type: 'button',
+      title: 'Remove Book',
+    });
     bookRemove.addEventListener('click', removeBookFromLibraryAndDisplay);
 
-    divider1.appendChild(bookTitle);
-    divider1.appendChild(bookAuthor);
+    return bookRemove;
+  }
+
+  static createBookReadLabel() {
+    const bookReadLabel = DOM.createEleAndAddClasses(
+      'label',
+      'read-status-label'
+    );
+    bookReadLabel.setAttribute('for', this.title);
+
+    return bookReadLabel;
+  }
+
+  static createBookReadCheckBox() {
+    const bookReadChkBox = DOM.createEleAndAddClasses('input', 'read-status');
+    DOM.setMultipleAttributes(bookReadChkBox, {
+      type: 'checkbox',
+      id: this.title,
+      name: this.title,
+      title: 'Book Read Status',
+    });
+    bookReadChkBox.addEventListener('change', readStatusChange);
+
+    return bookReadChkBox;
+  }
+
+  createAndAddBookToDisplay(libraryBooks) {
+    const bookCard = DOM.createEleAndAddClasses('div', 'book-card');
+
+    const divider1 = DOM.createEleAndAddClasses('div', 'book-divider1');
+    const divider2 = DOM.createEleAndAddClasses('div', 'book-divider2');
+
+    // divider1: bookTitle, bookAuthor, removeBookBtn
+    const bookTitle = DOM.createEleAndAddClasses('h3', 'book-title');
+    const bookAuthor = DOM.createEleAndAddClasses('h4', 'book-author');
+    const bookRemoveBtn = Book.createRemoveButton();
+    DOM.appendChildren(divider1, bookTitle, bookAuthor);
 
     // divider2: readLabel, readCheckbox
-    const bookReadLabel = document.createElement('label');
-    bookReadLabel.setAttribute('for', this.title);
-    bookReadLabel.classList.add('read-status-label');
-
-    const bookRead = document.createElement('input');
-    bookRead.setAttribute('type', 'checkbox');
-    bookRead.setAttribute('id', this.title);
-    bookRead.setAttribute('name', this.title);
-    bookRead.setAttribute('title', 'Book Read Status');
-    bookRead.classList.add('read-status');
-    bookRead.addEventListener('change', readStatusChange);
-
-    divider2.appendChild(bookRemove);
-    divider2.appendChild(bookReadLabel);
-    divider2.appendChild(bookRead);
+    const bookReadLabel = Book.createBookReadLabel();
+    const bookReadChkBox = Book.createBookReadCheckBox();
+    DOM.appendChildren(divider2, bookRemoveBtn, bookReadLabel, bookReadChkBox);
 
     // Set GUI values
     bookTitle.textContent = this.title;
     bookAuthor.textContent = this.author;
     bookReadLabel.textContent = 'Read';
-    bookRead.checked = this.haveRead;
-    bookRemove.textContent = '×';
+    bookReadChkBox.checked = this.haveRead;
+    bookRemoveBtn.textContent = '×';
 
     // Final set up of the Book Card
-    bookCard.appendChild(divider1);
-    bookCard.appendChild(divider2);
+    DOM.appendChildren(bookCard, divider1, divider2);
 
     // Set custom ID for tracking
     const bookID = libraryBooks.indexOf(this);
     bookCard.setAttribute('data-book-id', bookID);
-    bookRead.setAttribute('data-book-id', bookID);
-    bookRemove.setAttribute('data-book-id', bookID);
+    bookReadChkBox.setAttribute('data-book-id', bookID);
+    bookRemoveBtn.setAttribute('data-book-id', bookID);
 
     // Show book in the GUI
-    libraryContainer.appendChild(bookCard);
+    DOMElements.libraryContainer.appendChild(bookCard);
   }
 }
 
@@ -122,19 +146,13 @@ function addCustomBooksToLibrary() {
 }
 
 function displayLibraryBooks() {
-  libraryContainer.textContent = '';
+  DOMElements.libraryContainer.textContent = '';
 
   myLibrary.forEach((book) => {
     if (!(book === undefined)) {
       book.createAndAddBookToDisplay(myLibrary);
     }
   });
-
-  // for (const book of myLibrary) {
-  //   if (!(book === undefined)) {
-  //     book.createAndAddBookToDisplay(myLibrary);
-  //   }
-  // }
 }
 
 function initLibrary() {
@@ -144,9 +162,9 @@ function initLibrary() {
 }
 
 function addNewBookToLibrary() {
-  const newTitle = nBTitle.value;
-  const newAuthor = nBAuthor.value;
-  const newHasRead = nBHasRead.checked;
+  const newTitle = DOMElements.nBTitle.value;
+  const newAuthor = DOMElements.nBAuthor.value;
+  const newHasRead = DOMElements.nBHasRead.checked;
 
   const newBook = new Book(newTitle, newAuthor, newHasRead);
 
@@ -171,20 +189,20 @@ function addNewBookToLibrary() {
 /* ///////////////////////////////// */
 
 function openModal() {
-  nBContainer.style.display = 'flex';
+  DOMElements.nBContainer.style.display = 'flex';
 }
 
 function closeModal() {
-  nBContainer.style.display = 'none';
+  DOMElements.nBContainer.style.display = 'none';
 }
 
 function nBBtnClickOpenModal() {
-  nBForm.reset();
+  DOMElements.nBForm.reset();
   openModal();
 }
 
 function closeModalWindow(e) {
-  if (e.target === nBContainer || e.key === 'Escape') {
+  if (e.target === DOMElements.nBContainer || e.key === 'Escape') {
     closeModal();
   }
 }
@@ -212,12 +230,23 @@ function removeBookFromLibraryAndDisplay(e) {
   );
   console.log(bookIndex);
   console.log(bookCard);
-  libraryContainer.removeChild(bookCard);
+  DOMElements.libraryContainer.removeChild(bookCard);
 
   // myLibrary.splice(bookIndex, 1);
   delete myLibrary[bookIndex];
   console.log(myLibrary);
 }
+
+// Open form
+DOMElements.nBBtn.addEventListener('click', nBBtnClickOpenModal);
+
+// Close form
+DOMElements.nBCloseFormBtn.addEventListener('click', closeModal);
+window.addEventListener('click', closeModalWindow);
+window.addEventListener('keydown', closeModalWindow);
+
+// Add new book
+DOMElements.nBForm.addEventListener('submit', submitNewBookForm);
 
 /* ///////////////////////////////// */
 // DRIVER CODE
