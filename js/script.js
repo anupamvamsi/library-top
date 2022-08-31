@@ -14,6 +14,19 @@ class DOMElements {
   //  nBSubmitBtn = document.querySelector('.btn-submit-book');
 
   static libraryContainer = document.querySelector('.library-container');
+
+  static initEventListeners() {
+    // Open form
+    DOMElements.nBBtn.addEventListener('click', Modal.nBBtnClickOpenModal);
+
+    // Close form
+    DOMElements.nBCloseFormBtn.addEventListener('click', Modal.closeModal);
+    window.addEventListener('click', Modal.closeModalWindow);
+    window.addEventListener('keydown', Modal.closeModalWindow);
+
+    // Add new book
+    DOMElements.nBForm.addEventListener('submit', Form.submitNewBookForm);
+  }
 }
 
 class DOM {
@@ -199,47 +212,41 @@ class Library {
 // FORM - ADD NEW BOOK
 /* ///////////////////////////////// */
 
-function openModal() {
-  DOMElements.nBContainer.style.display = 'flex';
-}
+class Modal {
+  static openModal() {
+    DOMElements.nBContainer.style.display = 'flex';
+  }
 
-function closeModal() {
-  DOMElements.nBContainer.style.display = 'none';
-}
+  static closeModal() {
+    DOMElements.nBContainer.style.display = 'none';
+  }
 
-function nBBtnClickOpenModal() {
-  DOMElements.nBForm.reset();
-  openModal();
-}
+  static nBBtnClickOpenModal() {
+    DOMElements.nBForm.reset();
+    Modal.openModal();
+  }
 
-function closeModalWindow(e) {
-  if (e.target === DOMElements.nBContainer || e.key === 'Escape') {
-    closeModal();
+  static closeModalWindow(e) {
+    if (e.target === DOMElements.nBContainer || e.key === 'Escape') {
+      Modal.closeModal();
+    }
   }
 }
 
-function submitNewBookForm(e) {
-  e.preventDefault();
+class Form {
+  static submitNewBookForm(e) {
+    e.preventDefault();
 
-  Library.addNewBookToLibrary();
-  Library.displayLibraryBooks(Library.myLibrary);
+    Library.addNewBookToLibrary();
+    Library.displayLibraryBooks(Library.myLibrary);
 
-  // close pop up after submission
-  closeModal();
+    // close pop up after submission
+    Modal.closeModal();
+  }
 }
-
-// Open form
-DOMElements.nBBtn.addEventListener('click', nBBtnClickOpenModal);
-
-// Close form
-DOMElements.nBCloseFormBtn.addEventListener('click', closeModal);
-window.addEventListener('click', closeModalWindow);
-window.addEventListener('keydown', closeModalWindow);
-
-// Add new book
-DOMElements.nBForm.addEventListener('submit', submitNewBookForm);
 
 /* ///////////////////////////////// */
 // DRIVER CODE
 /* ///////////////////////////////// */
+DOMElements.initEventListeners();
 Library.initLibrary();
