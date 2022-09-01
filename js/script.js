@@ -142,7 +142,6 @@ class Book {
   static readStatusChange(e) {
     const bookIndex = Number(e.target.dataset.bookId);
     Library.myLibrary[bookIndex].haveRead = e.target.checked;
-    console.log(Library.myLibrary[bookIndex]);
   }
 }
 
@@ -197,14 +196,10 @@ class Library {
       `.book-card[data-book-id="${bookIndex}"`
     );
 
-    console.log(bookIndex);
-    console.log(bookCard);
-
     DOMElements.libraryContainer.removeChild(bookCard);
 
     // Library.myLibrary.splice(bookIndex, 1);
     delete Library.myLibrary[bookIndex];
-    console.log(Library.myLibrary);
   }
 }
 
