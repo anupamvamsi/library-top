@@ -63,7 +63,10 @@ class Book {
     this.title = title;
     this.author = author;
     this.haveRead = haveRead;
+    this.bookID = Book.bookID++;
   }
+
+  static bookID = 0;
 
   static createRemoveButton() {
     const bookRemove = DOM.createEleAndAddClasses('button', 'btn-remove-book');
@@ -115,8 +118,8 @@ class Book {
     DOM.appendChildren(divider1, bookTitle, bookAuthor);
 
     // divider2: readLabel, readCheckbox
-    const bookReadLabel = Book.createBookReadLabel();
-    const bookReadChkBox = Book.createBookReadCheckBox();
+    const bookReadLabel = Book.createBookReadLabel.call(this);
+    const bookReadChkBox = Book.createBookReadCheckBox.call(this);
     DOM.appendChildren(divider2, bookRemoveBtn, bookReadLabel, bookReadChkBox);
 
     // Set GUI values
@@ -130,7 +133,7 @@ class Book {
     DOM.appendChildren(bookCard, divider1, divider2);
 
     // Set custom ID for tracking
-    const bookID = libraryBooks.indexOf(this);
+    const bookID = this.bookID;
     bookCard.setAttribute('data-book-id', bookID);
     bookReadChkBox.setAttribute('data-book-id', bookID);
     bookRemoveBtn.setAttribute('data-book-id', bookID);
@@ -164,20 +167,10 @@ class Library {
     Library.addBookToLibrary(new Book('The Alchemist', 'Paulo Coelho', false));
   }
 
-  static displayLibraryBooks() {
-    DOMElements.libraryContainer.textContent = '';
-
-    Library.myLibrary.forEach((book) => {
-      if (!(book === undefined)) {
-        book.createAndAddBookToDisplay(Library.myLibrary);
-      }
-    });
-  }
-
   static initLibrary() {
     Library.addCustomBooksToLibrary();
 
-    Library.displayLibraryBooks(Library.myLibrary);
+    Display.displayLibraryBooks(Library.myLibrary);
   }
 
   static addNewBookToLibrary() {
@@ -188,6 +181,8 @@ class Library {
     const newBook = new Book(newTitle, newAuthor, newHasRead);
 
     Library.myLibrary.push(newBook);
+
+    return newBook;
   }
 
   static removeBookFromLibraryAndDisplay(e) {
@@ -200,6 +195,22 @@ class Library {
 
     // Library.myLibrary.splice(bookIndex, 1);
     delete Library.myLibrary[bookIndex];
+  }
+}
+
+class Display {
+  static displayLibraryBooks() {
+    DOMElements.libraryContainer.textContent = '';
+
+    Library.myLibrary.forEach((book) => {
+      if (!(book === undefined)) {
+        book.createAndAddBookToDisplay(Library.myLibrary);
+      }
+    });
+  }
+
+  static displayNewLibraryBook(newBook) {
+    newBook.createAndAddBookToDisplay(Library.myLibrary);
   }
 }
 
@@ -232,8 +243,8 @@ class Form {
   static submitNewBookForm(e) {
     e.preventDefault();
 
-    Library.addNewBookToLibrary();
-    Library.displayLibraryBooks(Library.myLibrary);
+    let newBook = Library.addNewBookToLibrary();
+    Display.displayNewLibraryBook(newBook);
 
     // close pop up after submission
     Modal.closeModal();
